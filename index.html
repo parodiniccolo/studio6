@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio 6 — Photo Studio Berlin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #111;
+            --white: #f8f7f4;
+            --gray: #6b6b6b;
+            --light-gray: #e8e6e1;
+        }
+
+        body {
+            font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--white);
+            color: var(--black);
+            line-height: 1.6;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(248, 247, 244, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        nav .logo {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        nav .nav-links a {
+            text-decoration: none;
+            color: var(--black);
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        nav .nav-links a:hover {
+            color: var(--gray);
+        }
+
+        /* HERO */
+        .hero {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 4rem 3rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.5));
+            color: white;
+        }
+
+        .hero-overlay h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            line-height: 1.1;
+        }
+
+        .hero-overlay p {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            opacity: 0.85;
+        }
+
+        /* SECTIONS */
+        section {
+            padding: 6rem 3rem;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+        }
+
+        /* ABOUT */
+        .about {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 8rem 3rem;
+        }
+
+        .about h2 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 400;
+            line-height: 1.4;
+            margin-bottom: 2rem;
+        }
+
+        .about p {
+            font-size: 1.1rem;
+            color: var(--gray);
+            line-height: 1.8;
+            max-width: 650px;
+        }
+
+        .about .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .about .details .detail-item {
+            font-size: 0.85rem;
+        }
+
+        .about .details .detail-label {
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.7rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .about .details .detail-value {
+            font-weight: 500;
+        }
+
+        /* GALLERY */
+        .gallery-section {
+            padding: 6rem 0;
+        }
+
+        .gallery-section .section-label {
+            padding-left: 3rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+        }
+
+        .gallery-grid .gallery-item {
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .gallery-grid .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .gallery-grid .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-grid .gallery-item.tall {
+            grid-row: span 2;
+            aspect-ratio: auto;
+        }
+
+        /* LIGHTBOX */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.97);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: var(--black);
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: 300;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--black);
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 1rem;
+            font-weight: 300;
+        }
+
+        .lightbox-prev { left: 1rem; }
+        .lightbox-next { right: 1rem; }
+
+        /* 3D TOUR */
+        .tour-section {
+            padding: 6rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tour-section h2 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        .tour-embed {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .tour-embed iframe {
+            display: block;
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+
+        /* FLOORPLAN + MAP ROW */
+        .info-row {
+            padding: 4rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .info-row-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: stretch;
+        }
+
+        .info-card {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .info-card-header {
+            padding: 1.2rem 1.5rem 0.8rem;
+        }
+
+        .info-card-header .section-label {
+            margin-bottom: 0.3rem;
+        }
+
+        .info-card-header h3 {
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+
+        .info-card img {
+            width: 100%;
+            display: block;
+        }
+
+        .info-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card iframe {
+            width: 100%;
+            flex: 1;
+            display: block;
+            border: none;
+        }
+
+        /* RENTAL / CONTACT FORM */
+        .rental-section {
+            padding: 6rem 3rem;
+            background: var(--light-gray);
+        }
+
+        .rental-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .rental-info h2 {
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            font-weight: 400;
+            line-height: 1.3;
+            margin-bottom: 1.5rem;
+        }
+
+        .rental-info p {
+            color: var(--gray);
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: var(--white);
+            color: var(--black);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            border-color: var(--gray);
+        }
+
+        .contact-form textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .contact-form button {
+            padding: 0.9rem 2rem;
+            background: var(--black);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            align-self: flex-start;
+        }
+
+        .contact-form button:hover {
+            opacity: 0.8;
+        }
+
+        /* CONTACT / FOOTER */
+        footer {
+            padding: 6rem 3rem;
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        footer h3 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        footer p {
+            color: rgba(248, 247, 244, 0.6);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        footer .footer-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(248, 247, 244, 0.4);
+            margin-bottom: 1rem;
+        }
+
+        footer a {
+            color: var(--white);
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        footer a:hover {
+            opacity: 0.6;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 4rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.8rem;
+            color: rgba(248, 247, 244, 0.3);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            nav .nav-links {
+                gap: 1.5rem;
+            }
+
+            nav .nav-links a {
+                font-size: 0.75rem;
+            }
+
+            section {
+                padding: 4rem 1.5rem;
+            }
+
+            .about {
+                padding: 5rem 1.5rem;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .gallery-grid .gallery-item.tall {
+                grid-row: span 1;
+                aspect-ratio: 4/3;
+            }
+
+            .gallery-section .section-label {
+                padding-left: 1.5rem;
+            }
+
+            .tour-section {
+                padding: 4rem 1.5rem;
+            }
+
+            .tour-embed iframe {
+                height: 400px;
+            }
+
+            .info-row {
+                padding: 4rem 1.5rem;
+            }
+
+            .info-row-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-card iframe {
+                height: 280px;
+            }
+
+            .rental-inner {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+
+            .rental-section {
+                padding: 4rem 1.5rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .hero-overlay {
+                padding: 3rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* SMOOTH SCROLL */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* FADE IN ANIMATION */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <div class="logo">Studio 6</div>
+        <ul class="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#tour">3D Tour</a></li>
+            <li><a href="#location">Location</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <img src="images/studio6-natural-light.jpeg" alt="Studio 6 — Natural light flooding the space">
+        <div class="hero-overlay">
+            <h1>Studio 6</h1>
+            <p>Photo studio in Berlin &mdash; 48 sqm of creative space</p>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about" id="about">
+        <div class="fade-in">
+            <p class="section-label">About the studio</p>
+            <h2>A bright, versatile space for photographers and creatives in the heart of Berlin.</h2>
+            <p>Studio 6 is a 48 sqm photo studio located at Kopernicker Str. 31, Berlin. Part of the Culturim organization, the studio offers generous natural light through large windows, professional lighting equipment, multiple backdrops, and a dedicated makeup and preparation area.</p>
+            <div class="details">
+                <div class="detail-item">
+                    <div class="detail-label">Size</div>
+                    <div class="detail-value">48 sqm</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Location</div>
+                    <div class="detail-value">Kopernicker Str. 31, Berlin</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Organization</div>
+                    <div class="detail-value">Culturim</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Features</div>
+                    <div class="detail-value">Natural light, backdrops, lighting gear</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="gallery-section" id="gallery">
+        <p class="section-label">The Space</p>
+        <div class="gallery-grid">
+            <div class="gallery-item tall" onclick="openLightbox(0)">
+                <img src="images/studio6-shooting-area.jpeg" alt="Studio 6 shooting area with natural light" loading="lazy">
+            </div>
+            <div class="gallery-item" onclick="openLightbox(1)">
+                <img src="images/studio6-image-4.png" alt="Studio 6 main area with backdrops and lighting" loading="lazy">
+            </div>
+            <div class="gallery-item" onclick="openLightbox(2)">
+                <img src="images/studio6-image-5.png" alt="Studio 6 wide view" loading="lazy">
+            </div>
+            <div class="gallery-item" onclick="openLightbox(3)">
+                <img src="images/studio6-portrait-session.jpeg" alt="Portrait session in progress" loading="lazy">
+            </div>
+            <div class="gallery-item" onclick="openLightbox(4)">
+                <img src="images/studio6-in-action.jpeg" alt="Photographer at work in Studio 6" loading="lazy">
+            </div>
+            <div class="gallery-item" onclick="openLightbox(5)">
+                <img src="images/studio6-daylight.jpeg" alt="Studio 6 daylight view" loading="lazy">
+            </div>
+            <div class="gallery-item" onclick="openLightbox(6)">
+                <img src="images/studio6-image-6.png" alt="Studio 6 wide angle" loading="lazy">
+            </div>
+            <div class="gallery-item" onclick="openLightbox(7)">
+                <img src="images/studio6-image-2.png" alt="Studio 6 equipment setup" loading="lazy">
+            </div>
+            <div class="gallery-item" onclick="openLightbox(8)">
+                <img src="images/studio6-lounge-area.jpeg" alt="Lounge and makeup area" loading="lazy">
+            </div>
+            <div class="gallery-item" onclick="openLightbox(9)">
+                <img src="images/studio6-image-3.png" alt="Studio 6 storage and equipment" loading="lazy">
+            </div>
+            <div class="gallery-item" onclick="openLightbox(10)">
+                <img src="images/studio6-image-7.png" alt="Studio 6 overview" loading="lazy">
+            </div>
+            <div class="gallery-item" onclick="openLightbox(11)">
+                <img src="images/studio6-image-8.png" alt="Studio 6 full view" loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <!-- LIGHTBOX -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-nav lightbox-prev" onclick="event.stopPropagation(); navigateLightbox(-1)">&#8249;</button>
+        <img id="lightbox-img" src="" alt="Studio 6 photo">
+        <button class="lightbox-nav lightbox-next" onclick="event.stopPropagation(); navigateLightbox(1)">&#8250;</button>
+    </div>
+
+    <!-- 3D TOUR -->
+    <section class="tour-section" id="tour">
+        <div class="fade-in">
+            <p class="section-label">Virtual Tour</p>
+            <h2>Explore the studio in 3D</h2>
+        </div>
+        <div class="tour-embed fade-in" style="margin-top: 2rem;">
+            <iframe src="https://app.kukan.ai/view/studio-6?embed=true" allowfullscreen></iframe>
+        </div>
+    </section>
+
+    <!-- FLOORPLAN + MAP -->
+    <section class="info-row" id="location">
+        <div class="info-row-grid fade-in">
+            <div class="info-card">
+                <div class="info-card-header">
+                    <p class="section-label">Floor Plan</p>
+                    <h3>Studio 6 layout</h3>
+                </div>
+                <img src="images/floorplan.png" alt="Floor plan — Studio 6 highlighted in blue" loading="lazy">
+            </div>
+            <div class="info-card">
+                <div class="info-card-header">
+                    <p class="section-label">Find Us</p>
+                    <h3>Kopernicker Str. 31, Berlin</h3>
+                </div>
+                <iframe src="https://maps.google.com/maps?q=K%C3%B6penicker+Stra%C3%9Fe+31,+10179+Berlin,+Germany&t=&z=16&ie=UTF8&iwloc=&output=embed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- RENTAL / CONTACT FORM -->
+    <section class="rental-section" id="contact">
+        <div class="rental-inner fade-in">
+            <div class="rental-info">
+                <p class="section-label">Available for Rent</p>
+                <h2>Book Studio 6 for your next project</h2>
+                <p>Whether you need a space for portrait sessions, product photography, or creative projects — Studio 6 is available for hourly and daily rental. Professional lighting, backdrops, and a prep area included.</p>
+            </div>
+            <form class="contact-form" action="https://formsubmit.co/poolbeatrice@gmail.com" method="POST">
+                <input type="hidden" name="_subject" value="Studio 6 — New booking inquiry">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="text" name="name" placeholder="Your name" required>
+                <input type="email" name="email" placeholder="Your email" required>
+                <input type="text" name="date" placeholder="Preferred date(s)">
+                <textarea name="message" placeholder="Tell us about your project..." required></textarea>
+                <button type="submit">Send Inquiry</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <h3>Get in touch</h3>
+                <p>Interested in booking Studio 6 for your next shoot? Reach out and we'll find the perfect time for your project.</p>
+                <p style="margin-top: 1rem;"><a href="mailto:poolbeatrice@gmail.com" style="color: var(--white); text-decoration: underline;">poolbeatrice@gmail.com</a></p>
+            </div>
+            <div>
+                <div class="footer-label">Address</div>
+                <p>Kopernicker Str. 31<br>Berlin, Germany</p>
+            </div>
+            <div>
+                <div class="footer-label">Part of</div>
+                <p><a href="#">Culturim</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>Studio 6 &mdash; Berlin</span>
+            <span>&copy; 2026</span>
+        </div>
+    </footer>
+
+    <script>
+        // Lightbox
+        const galleryImages = document.querySelectorAll('.gallery-item img');
+        const imageSrcs = Array.from(galleryImages).map(img => img.src);
+        let currentIndex = 0;
+
+        function openLightbox(index) {
+            currentIndex = index;
+            document.getElementById('lightbox-img').src = imageSrcs[index];
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox(event) {
+            if (event && event.target !== event.currentTarget && event.target.tagName !== 'BUTTON') return;
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function navigateLightbox(dir) {
+            currentIndex = (currentIndex + dir + imageSrcs.length) % imageSrcs.length;
+            document.getElementById('lightbox-img').src = imageSrcs[currentIndex];
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const lightbox = document.getElementById('lightbox');
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            if (e.key === 'ArrowRight') navigateLightbox(1);
+        });
+
+        // Fade in on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
