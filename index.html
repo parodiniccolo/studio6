@@ -66,6 +66,35 @@
             color: var(--gray);
         }
 
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--black);
+            margin: 5px 0;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
         /* HERO */
         .hero {
             height: 100vh;
@@ -329,6 +358,56 @@
             border: none;
         }
 
+        /* JOIN US CALLOUT */
+        .join-callout {
+            margin-top: 3rem;
+            padding: 1.5rem 1.8rem;
+            background: #1a56db;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .join-callout .badge {
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.2);
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            white-space: nowrap;
+        }
+
+        .join-callout p {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            max-width: none;
+            flex: 1;
+        }
+
+        .join-callout a.cta {
+            flex-shrink: 0;
+            display: inline-block;
+            padding: 0.6rem 1.4rem;
+            background: white;
+            color: #1a56db;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            transition: opacity 0.3s;
+        }
+
+        .join-callout a.cta:hover {
+            opacity: 0.9;
+        }
+
         /* RENTAL / CONTACT FORM */
         .rental-section {
             padding: 6rem 3rem;
@@ -468,12 +547,30 @@
                 padding: 1rem 1.5rem;
             }
 
+            .menu-toggle {
+                display: block;
+            }
+
             nav .nav-links {
-                gap: 1.5rem;
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(248, 247, 244, 0.97);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                padding: 1.5rem 1.5rem 2rem;
+                gap: 1.2rem;
+            }
+
+            nav .nav-links.open {
+                display: flex;
             }
 
             nav .nav-links a {
-                font-size: 0.75rem;
+                font-size: 0.9rem;
             }
 
             section {
@@ -515,6 +612,12 @@
 
             .info-card iframe {
                 height: 280px;
+            }
+
+            .join-callout {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
             }
 
             .rental-inner {
@@ -570,12 +673,15 @@
     <!-- NAV -->
     <nav>
         <div class="logo">Studio 6</div>
+        <button class="menu-toggle" onclick="this.classList.toggle('active'); document.querySelector('.nav-links').classList.toggle('open')">
+            <span></span><span></span><span></span>
+        </button>
         <ul class="nav-links">
-            <li><a href="#about">About</a></li>
-            <li><a href="#gallery">Gallery</a></li>
-            <li><a href="#tour">3D Tour</a></li>
-            <li><a href="#location">Location</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="#about" onclick="closeMenu()">About</a></li>
+            <li><a href="#gallery" onclick="closeMenu()">Gallery</a></li>
+            <li><a href="#tour" onclick="closeMenu()">3D Tour</a></li>
+            <li><a href="#location" onclick="closeMenu()">Location</a></li>
+            <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
         </ul>
     </nav>
 
@@ -593,7 +699,7 @@
         <div class="fade-in">
             <p class="section-label">About the studio</p>
             <h2>A bright, versatile space for photographers and creatives in the heart of Berlin.</h2>
-            <p>Studio 6 is a 48 sqm photo studio located at Kopernicker Str. 31, Berlin. Part of the Culturim organization, the studio offers generous natural light through large windows, professional lighting equipment, multiple backdrops, and a dedicated makeup and preparation area.</p>
+            <p>Studio 6 is a 48 sqm shared photography studio on Kopernicker Str. 31, about 5 minutes walk from Ostbahnhof. The space features beautiful south-facing natural light from a row of large windows, a main shooting area with multiple backdrops, gear storage, a large work table on wheels, and a small lounge/work zone. Part of the Culterim building, the studio has 24/7 access, an elevator, multiple bathrooms, and a basic kitchen.</p>
             <div class="details">
                 <div class="detail-item">
                     <div class="detail-label">Size</div>
@@ -601,16 +707,29 @@
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Location</div>
-                    <div class="detail-value">Kopernicker Str. 31, Berlin</div>
+                    <div class="detail-value">5 min from Ostbahnhof</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Light</div>
+                    <div class="detail-value">South-facing natural light</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Access</div>
+                    <div class="detail-value">24/7, secure building</div>
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Organization</div>
-                    <div class="detail-value">Culturim</div>
+                    <div class="detail-value">Culterim</div>
                 </div>
                 <div class="detail-item">
-                    <div class="detail-label">Features</div>
-                    <div class="detail-value">Natural light, backdrops, lighting gear</div>
+                    <div class="detail-label">Amenities</div>
+                    <div class="detail-value">Elevator, kitchen, bathrooms</div>
                 </div>
+            </div>
+            <div class="join-callout">
+                <span class="badge">Now looking</span>
+                <p>We're looking for a photographer or creative to join our shared studio. Relaxed, self-organized atmosphere.</p>
+                <a href="#listing" class="cta">See listing</a>
             </div>
         </div>
     </section>
@@ -623,37 +742,31 @@
                 <img src="images/studio6-shooting-area.jpeg" alt="Studio 6 shooting area with natural light" loading="lazy">
             </div>
             <div class="gallery-item" onclick="openLightbox(1)">
-                <img src="images/studio6-image-4.png" alt="Studio 6 main area with backdrops and lighting" loading="lazy">
+                <img src="images/studio6-image-4.jpg" alt="Studio 6 main area with backdrops and lighting" loading="lazy">
             </div>
             <div class="gallery-item" onclick="openLightbox(2)">
-                <img src="images/studio6-image-5.png" alt="Studio 6 wide view" loading="lazy">
-            </div>
-            <div class="gallery-item" onclick="openLightbox(3)">
                 <img src="images/studio6-portrait-session.jpeg" alt="Portrait session in progress" loading="lazy">
             </div>
-            <div class="gallery-item" onclick="openLightbox(4)">
+            <div class="gallery-item" onclick="openLightbox(3)">
                 <img src="images/studio6-in-action.jpeg" alt="Photographer at work in Studio 6" loading="lazy">
             </div>
-            <div class="gallery-item" onclick="openLightbox(5)">
+            <div class="gallery-item" onclick="openLightbox(4)">
                 <img src="images/studio6-daylight.jpeg" alt="Studio 6 daylight view" loading="lazy">
             </div>
+            <div class="gallery-item" onclick="openLightbox(5)">
+                <img src="images/studio6-image-6.jpg" alt="Studio 6 wide angle" loading="lazy">
+            </div>
             <div class="gallery-item" onclick="openLightbox(6)">
-                <img src="images/studio6-image-6.png" alt="Studio 6 wide angle" loading="lazy">
+                <img src="images/studio6-image-2.jpg" alt="Studio 6 equipment setup" loading="lazy">
             </div>
             <div class="gallery-item" onclick="openLightbox(7)">
-                <img src="images/studio6-image-2.png" alt="Studio 6 equipment setup" loading="lazy">
-            </div>
-            <div class="gallery-item" onclick="openLightbox(8)">
                 <img src="images/studio6-lounge-area.jpeg" alt="Lounge and makeup area" loading="lazy">
             </div>
+            <div class="gallery-item" onclick="openLightbox(8)">
+                <img src="images/studio6-image-7.jpg" alt="Studio 6 overview" loading="lazy">
+            </div>
             <div class="gallery-item" onclick="openLightbox(9)">
-                <img src="images/studio6-image-3.png" alt="Studio 6 storage and equipment" loading="lazy">
-            </div>
-            <div class="gallery-item" onclick="openLightbox(10)">
-                <img src="images/studio6-image-7.png" alt="Studio 6 overview" loading="lazy">
-            </div>
-            <div class="gallery-item" onclick="openLightbox(11)">
-                <img src="images/studio6-image-8.png" alt="Studio 6 full view" loading="lazy">
+                <img src="images/studio6-image-8.jpg" alt="Studio 6 full view" loading="lazy">
             </div>
         </div>
     </section>
@@ -685,7 +798,7 @@
                     <p class="section-label">Floor Plan</p>
                     <h3>Studio 6 layout</h3>
                 </div>
-                <img src="images/floorplan.png" alt="Floor plan — Studio 6 highlighted in blue" loading="lazy">
+                <img src="images/floorplan.jpg" alt="Floor plan — Studio 6 highlighted in blue" loading="lazy">
             </div>
             <div class="info-card">
                 <div class="info-card-header">
@@ -771,6 +884,12 @@
             if (e.key === 'ArrowLeft') navigateLightbox(-1);
             if (e.key === 'ArrowRight') navigateLightbox(1);
         });
+
+        // Mobile menu
+        function closeMenu() {
+            document.querySelector('.menu-toggle').classList.remove('active');
+            document.querySelector('.nav-links').classList.remove('open');
+        }
 
         // Fade in on scroll
         const observer = new IntersectionObserver((entries) => {
